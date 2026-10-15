@@ -15,8 +15,8 @@ Open-weight models such as gpt-oss can do schema-constrained extraction. But gpt
 - Every response is validated against the canonical Pydantic `FishingReport` schema. Invalid output is retried, then quarantined, never written to silver.
 - Results are cached by a hash of the source text, so unchanged text is never sent again.
 - Defaults by environment:
-  - **dev:** a small local model through Ollama, or the hosted free tier;
-  - **staging/prod:** gpt-oss on a hosted free tier, with AWS Bedrock gpt-oss as the low-cost fallback.
+  - **local:** a small local model through Ollama, or the hosted free tier;
+  - **dev/prod:** gpt-oss on a hosted free tier, with AWS Bedrock gpt-oss as the low-cost fallback.
 - A hand-labeled evaluation set scores each candidate model on field accuracy, cost and latency. The model is chosen on that evidence.
 
 ## Consequences

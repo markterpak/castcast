@@ -5,15 +5,15 @@
 
 ## Context
 
-castcast deploys to two AWS environments: staging and prod. Changes need a predictable promotion path: everything is validated in staging before it reaches prod, and an urgent fix can still reach prod without dragging along unfinished work.
+castcast deploys to two AWS environments: dev and prod, each in its own account (ADR 0004). Changes need a predictable promotion path: everything is validated in dev before it reaches prod, and an urgent fix can still reach prod without dragging along unfinished work.
 
 ## Decision
 
 | Branch | Purpose | Accepts PRs from | Merge method | Deploys to |
 |---|---|---|---|---|
 | `feature/*`, `fix/*`, `chore/*`, `docs/*`, `refactor/*`, `test/*`, `ci/*` | One unit of work | n/a | n/a | n/a |
-| `dev` | Integration | Work branches | **Squash only** | staging |
-| `main` | Release | `dev`, or `hotfix/*` | **Merge commit only** | prod |
+| `dev` | Integration | Work branches | **Squash only** | dev account |
+| `main` | Release | `dev`, or `hotfix/*` | **Merge commit only** | prod account |
 | `hotfix/*` | Urgent prod fix | n/a | n/a | n/a |
 
 - **Squash into dev:** each unit of work becomes one reviewable commit, so dev's history reads as a changelog.
