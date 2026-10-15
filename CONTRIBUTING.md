@@ -4,7 +4,7 @@
 
 ```
 feature/<name>  ──squash──▶  dev  ──merge──▶  main
-                             staging           prod
+                             dev acct          prod acct
 hotfix/<name> (cherry-picks of dev commits)  ──merge──▶  main
 ```
 

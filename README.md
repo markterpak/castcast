@@ -14,9 +14,10 @@ castcast collects public fisheries, water and weather data from several states a
 ## Architecture
 
 ```
-Ingest            Lakehouse (S3, Delta)        LLM extraction       Train / MLOps            Serve                 UI
-collectors   →    bronze → silver → gold   →   report text →    →   LightGBM + MLflow    →   FastAPI on Lambda  →  Streamlit map
-(scheduled)       unified multi-state schema   structured JSON      eval gate, promotion     batch + on-demand     color-coded lakes
+Ingest              Lakehouse (S3, Iceberg)      LLM extraction       Train / MLOps                Serve                    UI
+Lambda collectors → bronze → silver → gold   →   report text →    →   SageMaker Pipelines      →   Batch Transform +    →   Streamlit map
+(EventBridge)       Glue Catalog + Athena        structured JSON      LightGBM, MLflow tracking    Serverless Inference     color-coded lakes
+                    unified multi-state schema                        Model Registry, Monitor      FastAPI on Lambda
 ```
 
 ## Repository layout
@@ -51,11 +52,11 @@ uv run pytest --cov          # tests with coverage
 
 ### Branching
 
-Work branches → `dev` (squash, deploys staging) → `main` (merge commit, deploys prod). Hotfixes reach `main` only as cherry-picks from `dev`. Both protected branches require a PR and passing checks. See [CONTRIBUTING.md](CONTRIBUTING.md) and [ADR 0003](docs/adr/0003-branching-strategy.md).
+Work branches → `dev` (squash, deploys to the dev account) → `main` (merge commit, deploys to the prod account). Hotfixes reach `main` only as cherry-picks from `dev`. Both protected branches require a PR and passing checks. See [CONTRIBUTING.md](CONTRIBUTING.md) and [ADR 0003](docs/adr/0003-branching-strategy.md).
 
 ## Roadmap
 
-1. **Foundation:** workspace, tooling, CI, infrastructure as code, first Lambda in staging.
+1. **Foundation:** workspace, tooling, CI, infrastructure as code, AWS accounts and guardrails, first Lambda in dev.
 2. **Ingestion and lakehouse:** collectors and the bronze, silver and gold layers.
 3. **Unification and LLM extraction:** canonical schema, entity resolution, evaluated extraction.
 4. **Modeling and MLOps:** baselines, LightGBM, MLflow, evaluation gate, scheduled retraining.
