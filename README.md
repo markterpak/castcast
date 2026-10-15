@@ -49,6 +49,10 @@ uv run lint-imports          # architecture contracts
 uv run pytest --cov          # tests with coverage
 ```
 
+### Branching
+
+Work branches → `dev` (squash, deploys staging) → `main` (merge commit, deploys prod). Hotfixes reach `main` only as cherry-picks from `dev`. Both protected branches require a PR and passing checks. See [CONTRIBUTING.md](CONTRIBUTING.md) and [ADR 0003](docs/adr/0003-branching-strategy.md).
+
 ## Roadmap
 
 1. **Foundation:** workspace, tooling, CI, infrastructure as code, first Lambda in staging.

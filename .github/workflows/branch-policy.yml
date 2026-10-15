@@ -1,0 +1,73 @@
+name: Branch policy
+
+# Enforces the promotion path (see docs/adr/0003-branching-strategy.md):
+#   work branches (feature/, fix/, ...)  ->  dev  ->  main
+#   hotfix/* containing only cherry-picks from dev  ->  main
+# Required by the repository rulesets in .github/rulesets/.
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+jobs:
+  branch-policy:
+    name: Branch policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check source branch is allowed for the target
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+        run: |
+          work_branch='^(feature|fix|chore|docs|refactor|test|ci)/[a-z0-9][a-z0-9._-]*$'
+          case "$BASE" in
+            dev)
+              if [[ "$HEAD" =~ $work_branch || "$HEAD" == dependabot/* ]]; then
+                echo "OK: $HEAD -> dev"
+              else
+                echo "::error::Pull requests into dev must come from a work branch such as feature/<name> (also fix/, chore/, docs/, refactor/, test/, ci/). Got: $HEAD"
+                exit 1
+              fi
+              ;;
+            main)
+              if [[ "$HEAD" == "dev" || "$HEAD" == hotfix/* ]]; then
+                echo "OK: $HEAD -> main"
+              else
+                echo "::error::Pull requests into main must come from dev, or from hotfix/<name> containing cherry-picked commits. Got: $HEAD"
+                exit 1
+              fi
+              ;;
+          esac
+
+      - name: Check out full history for the hotfix audit
+        if: github.base_ref == 'main' && startsWith(github.head_ref, 'hotfix/')
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check every hotfix commit is a cherry-pick from dev
+        if: github.base_ref == 'main' && startsWith(github.head_ref, 'hotfix/')
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git fetch --no-tags origin dev
+          failed=0
+          for sha in $(git rev-list --no-merges "$BASE_SHA..$HEAD_SHA"); do
+            source=$(git log -1 --format=%B "$sha" | sed -n 's/^(cherry picked from commit \([0-9a-f]\{40\}\))$/\1/p' | tail -1)
+            if [[ -z "$source" ]]; then
+              echo "::error::$(git log -1 --format='%h %s' "$sha") is not a cherry-pick. Land the fix on dev first, then use: git cherry-pick -x <sha>"
+              failed=1
+            elif ! git merge-base --is-ancestor "$source" origin/dev; then
+              echo "::error::$(git log -1 --format='%h %s' "$sha") was cherry-picked from $source, which is not on dev."
+              failed=1
+            else
+              echo "OK: $(git log -1 --format='%h %s' "$sha") <- dev@${source:0:7}"
+            fi
+          done
+          exit "$failed"
