@@ -1,0 +1,178 @@
+[project]
+name = "castcast"
+version = "0.1.0"
+description = "Bass fishing forecast: predicts which lakes will fish well today, from public data across states."
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Markus Terpak", email = "markterpak@gmail.com" }]
+dependencies = [
+    "castcast-api",
+    "castcast-app",
+    "castcast-core",
+    "castcast-extract",
+    "castcast-ingest",
+    "castcast-ml",
+    "castcast-pipelines",
+    "castcast-serving",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28",
+    "import-linter>=2.3",
+    "mypy>=1.17",
+    "pre-commit>=4.2",
+    "pytest>=8.4",
+    "pytest-cov>=6.2",
+    "ruff>=0.12",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+castcast-api = { workspace = true }
+castcast-app = { workspace = true }
+castcast-core = { workspace = true }
+castcast-extract = { workspace = true }
+castcast-ingest = { workspace = true }
+castcast-ml = { workspace = true }
+castcast-pipelines = { workspace = true }
+castcast-serving = { workspace = true }
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["packages/*/src", "packages/*/tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "N", "B", "UP", "SIM", "RUF", "C4", "RET", "PT", "PTH", "S", "DTZ", "T20",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "castcast_api",
+    "castcast_app",
+    "castcast_core",
+    "castcast_extract",
+    "castcast_ingest",
+    "castcast_ml",
+    "castcast_pipelines",
+    "castcast_serving",
+]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["packages"]
+explicit_package_bases = true
+mypy_path = [
+    "$MYPY_CONFIG_FILE_DIR/packages/api/src",
+    "$MYPY_CONFIG_FILE_DIR/packages/app/src",
+    "$MYPY_CONFIG_FILE_DIR/packages/core/src",
+    "$MYPY_CONFIG_FILE_DIR/packages/extract/src",
+    "$MYPY_CONFIG_FILE_DIR/packages/ingest/src",
+    "$MYPY_CONFIG_FILE_DIR/packages/ml/src",
+    "$MYPY_CONFIG_FILE_DIR/packages/pipelines/src",
+    "$MYPY_CONFIG_FILE_DIR/packages/serving/src",
+]
+warn_unreachable = true
+
+[tool.pytest.ini_options]
+testpaths = ["packages"]
+addopts = ["--import-mode=importlib", "--strict-markers", "--strict-config", "-ra"]
+
+[tool.coverage.run]
+branch = true
+disable_warnings = ["module-not-imported", "no-data-collected"]
+source_pkgs = [
+    "castcast_api",
+    "castcast_app",
+    "castcast_core",
+    "castcast_extract",
+    "castcast_ingest",
+    "castcast_ml",
+    "castcast_pipelines",
+    "castcast_serving",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.importlinter]
+root_packages = [
+    "castcast_api",
+    "castcast_app",
+    "castcast_core",
+    "castcast_extract",
+    "castcast_ingest",
+    "castcast_ml",
+    "castcast_pipelines",
+    "castcast_serving",
+]
+
+[[tool.importlinter.contracts]]
+name = "core is the foundation and imports no other castcast package"
+type = "forbidden"
+source_modules = ["castcast_core"]
+forbidden_modules = [
+    "castcast_api",
+    "castcast_app",
+    "castcast_extract",
+    "castcast_ingest",
+    "castcast_ml",
+    "castcast_pipelines",
+    "castcast_serving",
+]
+
+[[tool.importlinter.contracts]]
+name = "app reaches data only over HTTP through the api"
+type = "forbidden"
+source_modules = ["castcast_app"]
+forbidden_modules = [
+    "castcast_api",
+    "castcast_extract",
+    "castcast_ingest",
+    "castcast_ml",
+    "castcast_pipelines",
+    "castcast_serving",
+]
+
+[[tool.importlinter.contracts]]
+name = "data stages hand off through storage, not imports"
+type = "independence"
+modules = ["castcast_ingest", "castcast_pipelines", "castcast_extract", "castcast_ml"]
+
+[[tool.importlinter.contracts]]
+name = "serving is a library shared by api and ml, with no upward imports"
+type = "forbidden"
+source_modules = ["castcast_serving"]
+forbidden_modules = [
+    "castcast_api",
+    "castcast_app",
+    "castcast_extract",
+    "castcast_ingest",
+    "castcast_ml",
+    "castcast_pipelines",
+]
+
+[[tool.importlinter.contracts]]
+name = "api serves predictions and app data, never runs pipelines or training"
+type = "forbidden"
+source_modules = ["castcast_api"]
+forbidden_modules = [
+    "castcast_app",
+    "castcast_extract",
+    "castcast_ingest",
+    "castcast_ml",
+    "castcast_pipelines",
+]

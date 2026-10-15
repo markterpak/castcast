@@ -1,0 +1,19 @@
+[project]
+name = "castcast-ml"
+version = "0.1.0"
+description = "Training, evaluation gate, MLflow registry, promotion and drift monitoring."
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Markus Terpak", email = "markterpak@gmail.com" }]
+dependencies = [
+    "castcast-core",
+    "castcast-serving",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+castcast-core = { workspace = true }
+castcast-serving = { workspace = true }

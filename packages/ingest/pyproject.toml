@@ -1,0 +1,17 @@
+[project]
+name = "castcast-ingest"
+version = "0.1.0"
+description = "Source registry and collectors that land raw data in the bronze layer."
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Markus Terpak", email = "markterpak@gmail.com" }]
+dependencies = [
+    "castcast-core",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+castcast-core = { workspace = true }

@@ -1,0 +1,17 @@
+[project]
+name = "castcast-extract"
+version = "0.1.0"
+description = "LLM extraction of structured fishing reports from free text, with an evaluation set."
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Markus Terpak", email = "markterpak@gmail.com" }]
+dependencies = [
+    "castcast-core",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+castcast-core = { workspace = true }

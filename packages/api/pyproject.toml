@@ -1,0 +1,21 @@
+[project]
+name = "castcast-api"
+version = "0.1.0"
+description = "FastAPI backend on AWS Lambda for scores, predictions and the catch log."
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Markus Terpak", email = "markterpak@gmail.com" }]
+dependencies = [
+    "castcast-core",
+    "castcast-serving",
+    "fastapi>=0.115",
+    "mangum>=0.19",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+castcast-core = { workspace = true }
+castcast-serving = { workspace = true }

@@ -1,0 +1,15 @@
+[project]
+name = "castcast-core"
+version = "0.1.0"
+description = "Shared foundation: canonical schemas, settings, logging, storage IO."
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Markus Terpak", email = "markterpak@gmail.com" }]
+dependencies = [
+    "pydantic>=2.11",
+    "pydantic-settings>=2.10",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
