@@ -14,7 +14,7 @@ def _function_url_event(path: str) -> dict[str, Any]:
         "routeKey": "$default",
         "rawPath": path,
         "rawQueryString": "",
-        "headers": {"host": "example.lambda-url.us-east-2.on.aws"},
+        "headers": {"host": "example.lambda-url.us-east-1.on.aws"},
         "requestContext": {
             "http": {"method": "GET", "path": path, "protocol": "HTTP/1.1", "sourceIp": "1.2.3.4"},
             "stage": "$default",
@@ -29,7 +29,7 @@ class FakeLambdaContext:
 
     function_name: str = "castcast-api-test"
     function_version: str = "$LATEST"
-    invoked_function_arn: str = "arn:aws:lambda:us-east-2:000000000000:function:castcast-api-test"
+    invoked_function_arn: str = "arn:aws:lambda:us-east-1:000000000000:function:castcast-api-test"
     memory_limit_in_mb: int = 512
     aws_request_id: str = "test-request"
     log_group_name: str = "/aws/lambda/castcast-api-test"

@@ -8,10 +8,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Environment(StrEnum):
-    """Deployment environment. Each one maps to its own AWS stack."""
+    """Where castcast runs. ``dev`` and ``prod`` each map to their own AWS account (ADR 0004)."""
 
+    LOCAL = "local"
     DEV = "dev"
-    STAGING = "staging"
     PROD = "prod"
 
 
@@ -20,8 +20,8 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="CASTCAST_", frozen=True)
 
-    env: Environment = Environment.DEV
-    aws_region: str = "us-east-2"
+    env: Environment = Environment.LOCAL
+    aws_region: str = "us-east-1"
     data_bucket: str | None = Field(
         default=None,
         description="S3 bucket for the bronze/silver/gold lakehouse. None means local storage.",
