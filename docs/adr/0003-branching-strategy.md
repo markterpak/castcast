@@ -24,7 +24,8 @@ castcast deploys to two AWS environments: staging and prod. Changes need a predi
 
 1. **Repository rulesets** (`.github/rulesets/*.json`) on `dev` and `main`:
    - a pull request is required, so there are no direct pushes;
-   - the required checks must pass, and the branch must be up to date with its target;
+   - the required checks must pass;
+   - on `dev` only, the branch must also be up to date with its target. `main` deliberately doesn't require this: every `dev` → `main` merge creates a merge commit that dev never receives, and dev's ruleset blocks merging main back in, so an up-to-date rule on main would block every release. The merge still reconciles cleanly, because main's extra commits are release merges and cherry-picks whose changes dev already contains;
    - review threads must be resolved;
    - the merge method is restricted as above;
    - force-pushes and deletion are blocked.
